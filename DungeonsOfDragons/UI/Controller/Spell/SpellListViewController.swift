@@ -49,7 +49,8 @@ extension SpellListViewController: UISearchResultsUpdating {
         }
         
         filteredSpellsModel = spellsModel.filter {
-            $0.name?.lowercased().contains(searchText) ?? false || (($0.nameEn?.lowercased().contains(searchText)) != nil)
+            $0.name?.lowercased().contains(searchText) ?? false || 
+            $0.nameEn?.lowercased().contains(searchText) ?? false
         }
         applySnapshot()
     }
