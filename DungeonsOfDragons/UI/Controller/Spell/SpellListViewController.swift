@@ -32,6 +32,12 @@ final class SpellListViewController: BaseViewController {
             applySnapshot()
         }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Обновляем snapshot при возврате на экран для отображения актуального состояния избранного
+        applySnapshot()
+    }
 }
 
 extension SpellListViewController: UISearchResultsUpdating {
@@ -49,19 +55,19 @@ extension SpellListViewController: UISearchResultsUpdating {
     }
 }
 
-//extension SpellListViewController: SpellViewControllerDelegate {
-//    func pressToFavoriteSpell(spell: SpellModel, isFavorite: Bool) {
-//        // Обработка избранного
-//    }
-//}
+extension SpellListViewController: SpellInfoViewControllerDelegate {
+    func pressToFavoriteSpell(spell: SpellModel, isFavorite: Bool) {
+        // Обработка избранного
+    }
+}
 
 extension SpellListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let spellModel = dataSource.itemIdentifier(for: indexPath) else { return }
         
-//        let vc = SpellViewController(spellModel: spellModel)
-//        vc.delegate = self
-//        present(vc, animated: true)
+        let vc = SpellInfoViewController(spellModel: spellModel)
+        vc.delegate = self
+        present(vc, animated: true)
     }
 }
 
@@ -113,10 +119,17 @@ private extension SpellListViewController {
             
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
-            cell.confuguration(spell, isFavorite: false)
+            let spellName = spell.name ?? ""
+            let isFavorite = FavoritesManager.shared.isSpellFavorite(spellName)
+            cell.confuguration(spell, isFavorite: isFavorite)
             cell.favoriteCompletion = { [weak self] data, isFavorite in
                 guard let self else { return }
-                // Обработка избранного
+                let spellName = data.name ?? ""
+                if isFavorite {
+                    FavoritesManager.shared.addSpellToFavorites(spellName)
+                } else {
+                    FavoritesManager.shared.removeSpellFromFavorites(spellName)
+                }
             }
             
             return cell

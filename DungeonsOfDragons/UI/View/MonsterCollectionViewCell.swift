@@ -33,6 +33,7 @@ final class MonsterCollectionViewCell: UICollectionViewCell {
         }
         
         titleLabel.text = data.name
+        iconButton.isSelected = isFavorite
     }
     
     @objc private func iconButtonTapped() {

@@ -46,6 +46,7 @@ final class SpellTableViewCell: UITableViewCell {
         )
         attributedString.append(nameEnString)
         titleLabel.attributedText = attributedString
+        iconButton.isSelected = isFavorite
     }
     
     @objc private func iconButtonTapped() {

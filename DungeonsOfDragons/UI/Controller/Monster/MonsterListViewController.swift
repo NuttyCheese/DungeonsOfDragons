@@ -29,21 +29,27 @@ final class MonsterListViewController: BaseViewController {
             applySnapshot(animatingDifferences: false)
         }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Обновляем snapshot при возврате на экран для отображения актуального состояния избранного
+        applySnapshot(animatingDifferences: false)
+    }
 }
 
-//extension MonsterListViewController: MonsterViewControllerDelegate {
-//    func pressToFavoriteMonster(spell: MonsterModel, isFavorite: Bool) {
-//        
-//    }
-//}
+extension MonsterListViewController: MonsterInfoViewControllerDelegate {
+    func pressToFavoriteMonster(spell: MonsterModel, isFavorite: Bool) {
+        
+    }
+}
 
 extension MonsterListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let monsterModel = dataSource.itemIdentifier(for: indexPath) else { return }
         
-//        let vc = MonsterInfoViewController(monsterModel: monsterModel)
-//        vc.delegate = self
-//        present(vc, animated: true)
+        let vc = MonsterInfoViewController(monsterModel: monsterModel)
+        vc.delegate = self
+        present(vc, animated: true)
     }
 }
 // MARK: - Diffable Data Source Setup
@@ -53,10 +59,10 @@ private extension MonsterListViewController {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MonsterCollectionViewCell.description(), for: indexPath) as? MonsterCollectionViewCell else {
                 return UICollectionViewCell()
             }
-            cell.configure(data: monster, isFavorite: false)
-            cell.favoriteCompletion = { [weak self] data, isFavorite in
-                guard let self else { return }
-                // Обработка избранного
+            let isFavorite = FavoritesManager.shared.isMonsterFavorite(monster.name)
+            cell.configure(data: monster, isFavorite: isFavorite)
+            cell.favoriteCompletion = { data, isFavorite in
+                isFavorite ? FavoritesManager.shared.addMonsterToFavorites(data.name) : FavoritesManager.shared.removeMonsterFromFavorites(data.name)
             }
             return cell
         }
