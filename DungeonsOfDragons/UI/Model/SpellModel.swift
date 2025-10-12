@@ -7,67 +7,51 @@
 
 import Foundation
 
-// MARK: - Spell Model
 struct SpellModel: Codable, Hashable {
-    let nameEn, name: String
+    let nameEn, name: String?
     let school: School?
     let level, castingTime: String?
-    let range: String
+    let range: String?
     let components: String?
-    let duration, text: String
-    let spellClass: [SpellClass]
+    let duration, text: String?
+    let spellClass: [SpellClass]?
 }
 
-// MARK: - School
 enum School: String, Codable {
-    /// Воплощение
-    case embodiment = "воплощение"
-    /// Вызов
-    case conjuration = "вызов"
-    /// Иллюзия
-    case illusion = "иллюзия"
-    /// Некромантия
-    case necromancy = "некромантия"
-    /// Ограждение
-    case abjuration = "ограждение"
-    /// Очарование
-    case enchantment = "очарование"
-    /// Преобразование
-    case transmutation = "преобразование"
-    /// Прорицание
-    case divination = "прорицание"
-    /// Магия Пустоты
-    case voidMagic = "Магия Пустоты"
-    /// Проявление
-    case manifestation = "Проявление"
-    /// Пустота
-    case voidSchool = "Пустота"
-    /// Ритуал
-    case ritual = "ритуал"
+    case schoolВоплощение = "воплощение"
+    case schoolВызов = "вызов"
+    case schoolИллюзия = "иллюзия"
+    case schoolНекромантия = "некромантия"
+    case schoolОграждение = "ограждение"
+    case schoolОчарование = "очарование"
+    case schoolПреобразование = "преобразование"
+    case schoolПрорицание = "прорицание"
+    case воплощение = "Воплощение"
+    case вызов = "Вызов"
+    case иллюзия = "Иллюзия"
+    case магияПустоты = "Магия Пустоты"
+    case некромантия = "Некромантия"
+    case ограждение = "Ограждение"
+    case очарование = "Очарование"
+    case преобразование = "Преобразование"
+    case прорицание = "Прорицание"
+    case проявление = "Проявление"
+    case пустота = "Пустота"
+    case ритуал = "ритуал"
 }
 
-// MARK: - Spell Class
 struct SpellClass: Codable, Hashable {
-    let name: SpellCaster
-    let selected: Bool
+    let name: SpellCaster?
+    let selected: Bool?
 }
 
-// MARK: - Spell Caster Names
 enum SpellCaster: String, Codable {
-    /// Бард
-    case bard = "Бард"
-    /// Волшебник
-    case wizard = "Волшебник"
-    /// Друид
-    case druid = "Друид"
-    /// Жрец
-    case cleric = "Жрец"
-    /// Колдун
-    case warlock = "Колдун"
-    /// Паладин
-    case paladin = "Паладин"
-    /// Рейнджер
-    case ranger = "Рейнджер"
-    /// Чародей
-    case sorcerer = "Чародей"
+    case бард = "Бард"
+    case волшебник = "Волшебник"
+    case друид = "Друид"
+    case жрец = "Жрец"
+    case колдун = "Колдун"
+    case паладин = "Паладин"
+    case рейнджер = "Рейнджер"
+    case чародей = "Чародей"
 }
