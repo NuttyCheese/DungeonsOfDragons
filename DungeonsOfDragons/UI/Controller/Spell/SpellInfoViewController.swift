@@ -34,6 +34,7 @@ final class SpellInfoViewController: BaseViewController {
         super.viewDidLoad()
         setupView()
         setupFavoriteButton()
+        updateFavoriteButtonState()
         configureDataSource()
         applySnapshot()
     }
@@ -110,11 +111,23 @@ private extension SpellInfoViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
+    func updateFavoriteButtonState() {
+        let spellName = spellModel.name ?? ""
+        let isFavorite = FavoritesManager.shared.isSpellFavorite(spellName)
+        favoriteButton.isSelected = isFavorite
+    }
+    
     @objc private func iconButtonTapped() {
         favoriteButton.isSelected.toggle()
         UIView.transition(with: favoriteButton, duration: 0.3, options: .transitionFlipFromRight) { [weak self] in
             guard let self else { return }
-            delegate?.pressToFavoriteSpell(spell: spellModel, isFavorite: favoriteButton.isSelected)
+            let spellName = self.spellModel.name ?? ""
+            if self.favoriteButton.isSelected {
+                FavoritesManager.shared.addSpellToFavorites(spellName)
+            } else {
+                FavoritesManager.shared.removeSpellFromFavorites(spellName)
+            }
+            self.delegate?.pressToFavoriteSpell(spell: self.spellModel, isFavorite: self.favoriteButton.isSelected)
         }
     }
 }

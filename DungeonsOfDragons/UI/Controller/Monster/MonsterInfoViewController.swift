@@ -54,13 +54,24 @@ private extension MonsterInfoViewController {
     }
     
     func setupDataSource() {
-        dataSource = UITableViewDiffableDataSource<Section, Row>(tableView: tableView) { tableView, indexPath, row in
+        dataSource = UITableViewDiffableDataSource<Section, Row>(tableView: tableView) { [weak self] tableView, indexPath, row in
+            guard let self else { return UITableViewCell() }
             switch row {
                 case .image(let url):
                     let cell = tableView.dequeueReusableCell(withIdentifier: MonsterImageTableViewCell.description(), for: indexPath) as! MonsterImageTableViewCell
                     cell.selectionStyle = .none
                     cell.backgroundColor = .clear
-                    cell.configure(with: url)
+                    let isFavorite = FavoritesManager.shared.isMonsterFavorite(self.monsterModel.name)
+                    cell.configure(with: url, isFavorite: isFavorite)
+                    cell.favoriteCompletion = { [weak self] isFavorite in
+                        guard let self else { return }
+                        if isFavorite {
+                            FavoritesManager.shared.addMonsterToFavorites(self.monsterModel.name)
+                        } else {
+                            FavoritesManager.shared.removeMonsterFromFavorites(self.monsterModel.name)
+                        }
+                        self.delegate?.pressToFavoriteMonster(spell: self.monsterModel, isFavorite: isFavorite)
+                    }
                     return cell
                 case .detail(let title, let value):
                     let cell = tableView.dequeueReusableCell(withIdentifier: MonsterDetailTableViewCell.description(), for: indexPath) as! MonsterDetailTableViewCell
