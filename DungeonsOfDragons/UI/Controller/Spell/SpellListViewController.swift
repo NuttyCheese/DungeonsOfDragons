@@ -61,39 +61,7 @@ extension SpellListViewController: UISearchResultsUpdating {
         // Сначала фильтруем по выбранным фильтрам
         var baseFiltered = spellsModel
         if !selectedFilters.isEmpty {
-            // Группируем фильтры по категориям
-            let schoolFilters = selectedFilters.compactMap { filter -> School? in
-                if case .school(let school) = filter {
-                    return school
-                }
-                return nil
-            }
-            
-            let casterFilters = selectedFilters.compactMap { filter -> SpellCaster? in
-                if case .spellCaster(let caster) = filter {
-                    return caster
-                }
-                return nil
-            }
-            
-            baseFiltered = spellsModel.filter { spell in
-                // Проверяем школу (OR внутри категории)
-                var matchesSchool = true
-                if !schoolFilters.isEmpty {
-                    matchesSchool = schoolFilters.contains { spell.school == $0 }
-                }
-                
-                // Проверяем класс заклинателя (OR внутри категории)
-                var matchesCaster = true
-                if !casterFilters.isEmpty {
-                    matchesCaster = casterFilters.contains { caster in
-                        spell.spellClass?.contains { $0.name == caster } ?? false
-                    }
-                }
-                
-                // AND между категориями
-                return matchesSchool && matchesCaster
-            }
+            baseFiltered = filterSpellsArray(spellsModel, with: selectedFilters)
         }
         
         // Затем фильтруем по поисковому запросу
@@ -194,22 +162,66 @@ private extension SpellListViewController {
             return
         }
         
+        filteredSpellsModel = filterSpellsArray(spellsModel, with: selectedFilters)
+        applySnapshot()
+    }
+    
+    func filterSpellsArray(_ spells: [SpellModel], with filters: [SpellFilterValue]) -> [SpellModel] {
+        guard !filters.isEmpty else {
+            return spells
+        }
+        
         // Группируем фильтры по категориям
-        let schoolFilters = selectedFilters.compactMap { filter -> School? in
+        let schoolFilters = filters.compactMap { filter -> String? in
             if case .school(let school) = filter {
                 return school
             }
             return nil
         }
         
-        let casterFilters = selectedFilters.compactMap { filter -> SpellCaster? in
+        let casterFilters = filters.compactMap { filter -> String? in
             if case .spellCaster(let caster) = filter {
                 return caster
             }
             return nil
         }
         
-        filteredSpellsModel = spellsModel.filter { spell in
+        let componentsFilters = filters.compactMap { filter -> String? in
+            if case .components(let components) = filter {
+                return components
+            }
+            return nil
+        }
+        
+        let rangeFilters = filters.compactMap { filter -> String? in
+            if case .range(let range) = filter {
+                return range
+            }
+            return nil
+        }
+        
+        let castingTimeFilters = filters.compactMap { filter -> String? in
+            if case .castingTime(let castingTime) = filter {
+                return castingTime
+            }
+            return nil
+        }
+        
+        let durationFilters = filters.compactMap { filter -> String? in
+            if case .duration(let duration) = filter {
+                return duration
+            }
+            return nil
+        }
+        
+        let levelFilters = filters.compactMap { filter -> String? in
+            if case .level(let level) = filter {
+                return level
+            }
+            return nil
+        }
+        
+        return spells.filter { spell in
             // Проверяем школу (OR внутри категории)
             var matchesSchool = true
             if !schoolFilters.isEmpty {
@@ -224,11 +236,40 @@ private extension SpellListViewController {
                 }
             }
             
+            // Проверяем компоненты (OR внутри категории)
+            var matchesComponents = true
+            if !componentsFilters.isEmpty {
+                matchesComponents = componentsFilters.contains { spell.components == $0 }
+            }
+            
+            // Проверяем расстояние (OR внутри категории)
+            var matchesRange = true
+            if !rangeFilters.isEmpty {
+                matchesRange = rangeFilters.contains { spell.range == $0 }
+            }
+            
+            // Проверяем время действия (OR внутри категории)
+            var matchesCastingTime = true
+            if !castingTimeFilters.isEmpty {
+                matchesCastingTime = castingTimeFilters.contains { spell.castingTime == $0 }
+            }
+            
+            // Проверяем длительность (OR внутри категории)
+            var matchesDuration = true
+            if !durationFilters.isEmpty {
+                matchesDuration = durationFilters.contains { spell.duration == $0 }
+            }
+            
+            // Проверяем уровень (OR внутри категории)
+            var matchesLevel = true
+            if !levelFilters.isEmpty {
+                matchesLevel = levelFilters.contains { spell.level == $0 }
+            }
+            
             // AND между категориями
-            return matchesSchool && matchesCaster
+            return matchesSchool && matchesCaster && matchesComponents && matchesRange &&
+                   matchesCastingTime && matchesDuration && matchesLevel
         }
-        
-        applySnapshot()
     }
     
     func setupConstraints() {

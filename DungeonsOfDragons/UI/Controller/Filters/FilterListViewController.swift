@@ -91,7 +91,20 @@ final class MonsterFilterListViewController: BaseViewController, UICollectionVie
     }
     
     private func setupCategories() {
-        categories = [.biom, .cha, .size, .type]
+        categories = [.biom, .cha, .size, .type, .skill, .exp, .cr, .ac, .hp, .speed, .alignment, .str, .dex, .con, .intilect, .wis, .chaStat]
+    }
+    
+    private func matchesCategory(_ category: MonsterFilterCategory, filter: MonsterFilterValue) -> Bool {
+        switch (category, filter) {
+        case (.biom, .biom), (.cha, .cha), (.size, .size), (.type, .type),
+             (.skill, .skill), (.exp, .exp), (.cr, .cr), (.ac, .ac),
+             (.hp, .hp), (.speed, .speed), (.alignment, .alignment),
+             (.str, .str), (.dex, .dex), (.con, .con), (.intilect, .intilect),
+             (.wis, .wis), (.chaStat, .chaStat):
+            return true
+        default:
+            return false
+        }
     }
     
     // MARK: - UICollectionViewDelegate
@@ -104,12 +117,7 @@ final class MonsterFilterListViewController: BaseViewController, UICollectionVie
         // Получаем доступные значения для этой категории из моделей
         let availableValues = monsters.getAvailableFilterValues(for: category)
         let selectedValues = selectedFilters.filter { filter in
-            switch (category, filter) {
-            case (.biom, .biom), (.cha, .cha), (.size, .size), (.type, .type):
-                return true
-            default:
-                return false
-            }
+            matchesCategory(category, filter: filter)
         }
         
         // Открываем экран выбора
@@ -124,12 +132,7 @@ final class MonsterFilterListViewController: BaseViewController, UICollectionVie
             
             // Удаляем старые фильтры этой категории
             self.selectedFilters.removeAll { filter in
-                switch (category, filter) {
-                case (.biom, .biom), (.cha, .cha), (.size, .size), (.type, .type):
-                    return true
-                default:
-                    return false
-                }
+                self.matchesCategory(category, filter: filter)
             }
             
             // Добавляем новые выбранные фильтры
@@ -507,7 +510,19 @@ final class SpellFilterListViewController: BaseViewController, UICollectionViewD
     }
     
     private func setupCategories() {
-        categories = [.school, .spellCaster]
+        categories = [.school, .spellCaster, .components, .range, .castingTime, .duration, .level]
+    }
+    
+    private func matchesCategory(_ category: SpellFilterCategory, filter: SpellFilterValue) -> Bool {
+        switch (category, filter) {
+        case (.school, .school), (.spellCaster, .spellCaster),
+             (.components, .components), (.range, .range),
+             (.castingTime, .castingTime), (.duration, .duration),
+             (.level, .level):
+            return true
+        default:
+            return false
+        }
     }
     
     // MARK: - UICollectionViewDelegate
@@ -519,11 +534,7 @@ final class SpellFilterListViewController: BaseViewController, UICollectionViewD
         
         let availableValues = spells.getAvailableFilterValues(for: category)
         let selectedValues = selectedFilters.filter { filter in
-            switch (category, filter) {
-            case (.school, .school), (.spellCaster, .spellCaster):
-                return true
-            default: return false
-            }
+            matchesCategory(category, filter: filter)
         }
         
         let selectionVC = FilterCategorySelectionViewController<SpellFilterValue>(
@@ -536,11 +547,7 @@ final class SpellFilterListViewController: BaseViewController, UICollectionViewD
             guard let self = self else { return }
             
             self.selectedFilters.removeAll { filter in
-                switch (category, filter) {
-                case (.school, .school), (.spellCaster, .spellCaster):
-                    return true
-                default: return false
-                }
+                self.matchesCategory(category, filter: filter)
             }
             
             self.selectedFilters.append(contentsOf: newSelections)
@@ -744,4 +751,3 @@ private extension SectionHeaderView {
         ])
     }
 }
-

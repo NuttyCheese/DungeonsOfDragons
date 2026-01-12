@@ -10,19 +10,19 @@ import Foundation
 struct MonsterModel: Codable, Hashable {
     let name, pdfName, lineHeight: String
     let fiction, pdfFiction: String?
-    let size: Size
-    let type: TypeEnum
+    let size: String
+    let type: String
     let alignment, ac, pdfAC, hp: String
     let speed: String
-    let str, dex, con, intilect: Cha
-    let wis, cha: Cha
+    let str, dex, con, intilect: String
+    let wis, cha: String
     let passive: String
     let languages: [String]
     let cr, exp: String
     let senses: String?
     let skill: [String]
     let monsterTrait, monsterAction: [MonsterActionModel]
-    let bioms: [Biom]
+    let bioms: [String]
     let imgStaticURL: String
 
     enum CodingKeys: String, CodingKey {

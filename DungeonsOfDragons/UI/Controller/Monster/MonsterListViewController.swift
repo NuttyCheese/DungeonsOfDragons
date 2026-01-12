@@ -112,66 +112,7 @@ extension MonsterListViewController: UISearchResultsUpdating {
         // Сначала фильтруем по выбранным фильтрам
         var baseFiltered = monstersModel
         if !selectedFilters.isEmpty {
-            // Группируем фильтры по категориям
-            let biomFilters = selectedFilters.compactMap { filter -> Biom? in
-                if case .biom(let biom) = filter {
-                    return biom
-                }
-                return nil
-            }
-            
-            let chaFilters = selectedFilters.compactMap { filter -> Cha? in
-                if case .cha(let cha) = filter {
-                    return cha
-                }
-                return nil
-            }
-            
-            let sizeFilters = selectedFilters.compactMap { filter -> Size? in
-                if case .size(let size) = filter {
-                    return size
-                }
-                return nil
-            }
-            
-            let typeFilters = selectedFilters.compactMap { filter -> TypeEnum? in
-                if case .type(let type) = filter {
-                    return type
-                }
-                return nil
-            }
-            
-            baseFiltered = monstersModel.filter { monster in
-                // Проверяем биомы (OR внутри категории)
-                var matchesBiom = true
-                if !biomFilters.isEmpty {
-                    matchesBiom = biomFilters.contains { monster.bioms.contains($0) }
-                }
-                
-                // Проверяем характеристики (OR внутри категории)
-                var matchesCha = true
-                if !chaFilters.isEmpty {
-                    matchesCha = chaFilters.contains { cha in
-                        monster.str == cha || monster.dex == cha || monster.con == cha ||
-                        monster.intilect == cha || monster.wis == cha || monster.cha == cha
-                    }
-                }
-                
-                // Проверяем размер (OR внутри категории)
-                var matchesSize = true
-                if !sizeFilters.isEmpty {
-                    matchesSize = sizeFilters.contains { monster.size == $0 }
-                }
-                
-                // Проверяем тип (OR внутри категории)
-                var matchesType = true
-                if !typeFilters.isEmpty {
-                    matchesType = typeFilters.contains { monster.type == $0 }
-                }
-                
-                // AND между категориями
-                return matchesBiom && matchesCha && matchesSize && matchesType
-            }
+            baseFiltered = filterMonstersArray(monstersModel, with: selectedFilters)
         }
         
         // Затем фильтруем по поисковому запросу
@@ -275,36 +216,136 @@ private extension MonsterListViewController {
             return
         }
         
+        filteredMonstersModel = filterMonstersArray(monstersModel, with: selectedFilters)
+        applySnapshot(animatingDifferences: true)
+    }
+    
+    func filterMonstersArray(_ monsters: [MonsterModel], with filters: [MonsterFilterValue]) -> [MonsterModel] {
+        guard !filters.isEmpty else {
+            return monsters
+        }
+        
         // Группируем фильтры по категориям
-        let biomFilters = selectedFilters.compactMap { filter -> Biom? in
+        let biomFilters = filters.compactMap { filter -> String? in
             if case .biom(let biom) = filter {
                 return biom
             }
             return nil
         }
         
-        let chaFilters = selectedFilters.compactMap { filter -> Cha? in
+        let chaFilters = filters.compactMap { filter -> String? in
             if case .cha(let cha) = filter {
                 return cha
             }
             return nil
         }
         
-        let sizeFilters = selectedFilters.compactMap { filter -> Size? in
+        let sizeFilters = filters.compactMap { filter -> String? in
             if case .size(let size) = filter {
                 return size
             }
             return nil
         }
         
-        let typeFilters = selectedFilters.compactMap { filter -> TypeEnum? in
+        let typeFilters = filters.compactMap { filter -> String? in
             if case .type(let type) = filter {
                 return type
             }
             return nil
         }
         
-        filteredMonstersModel = monstersModel.filter { monster in
+        let skillFilters = filters.compactMap { filter -> String? in
+            if case .skill(let skill) = filter {
+                return skill
+            }
+            return nil
+        }
+        
+        let expFilters = filters.compactMap { filter -> String? in
+            if case .exp(let exp) = filter {
+                return exp
+            }
+            return nil
+        }
+        
+        let crFilters = filters.compactMap { filter -> String? in
+            if case .cr(let cr) = filter {
+                return cr
+            }
+            return nil
+        }
+        
+        let acFilters = filters.compactMap { filter -> String? in
+            if case .ac(let ac) = filter {
+                return ac
+            }
+            return nil
+        }
+        
+        let hpFilters = filters.compactMap { filter -> String? in
+            if case .hp(let hp) = filter {
+                return hp
+            }
+            return nil
+        }
+        
+        let speedFilters = filters.compactMap { filter -> String? in
+            if case .speed(let speed) = filter {
+                return speed
+            }
+            return nil
+        }
+        
+        let alignmentFilters = filters.compactMap { filter -> String? in
+            if case .alignment(let alignment) = filter {
+                return alignment
+            }
+            return nil
+        }
+        
+        let strFilters = filters.compactMap { filter -> String? in
+            if case .str(let str) = filter {
+                return str
+            }
+            return nil
+        }
+        
+        let dexFilters = filters.compactMap { filter -> String? in
+            if case .dex(let dex) = filter {
+                return dex
+            }
+            return nil
+        }
+        
+        let conFilters = filters.compactMap { filter -> String? in
+            if case .con(let con) = filter {
+                return con
+            }
+            return nil
+        }
+        
+        let intilectFilters = filters.compactMap { filter -> String? in
+            if case .intilect(let intilect) = filter {
+                return intilect
+            }
+            return nil
+        }
+        
+        let wisFilters = filters.compactMap { filter -> String? in
+            if case .wis(let wis) = filter {
+                return wis
+            }
+            return nil
+        }
+        
+        let chaStatFilters = filters.compactMap { filter -> String? in
+            if case .chaStat(let chaStat) = filter {
+                return chaStat
+            }
+            return nil
+        }
+        
+        return monsters.filter { monster in
             // Проверяем биомы (OR внутри категории)
             var matchesBiom = true
             if !biomFilters.isEmpty {
@@ -332,11 +373,90 @@ private extension MonsterListViewController {
                 matchesType = typeFilters.contains { monster.type == $0 }
             }
             
+            // Проверяем навыки (OR внутри категории)
+            var matchesSkill = true
+            if !skillFilters.isEmpty {
+                matchesSkill = skillFilters.contains { monster.skill.contains($0) }
+            }
+            
+            // Проверяем опыт (OR внутри категории)
+            var matchesExp = true
+            if !expFilters.isEmpty {
+                matchesExp = expFilters.contains { monster.exp == $0 }
+            }
+            
+            // Проверяем рейтинг сложности (OR внутри категории)
+            var matchesCr = true
+            if !crFilters.isEmpty {
+                matchesCr = crFilters.contains { monster.cr == $0 }
+            }
+            
+            // Проверяем класс брони (OR внутри категории)
+            var matchesAc = true
+            if !acFilters.isEmpty {
+                matchesAc = acFilters.contains { monster.ac == $0 }
+            }
+            
+            // Проверяем здоровье (OR внутри категории)
+            var matchesHp = true
+            if !hpFilters.isEmpty {
+                matchesHp = hpFilters.contains { monster.hp == $0 }
+            }
+            
+            // Проверяем скорость (OR внутри категории)
+            var matchesSpeed = true
+            if !speedFilters.isEmpty {
+                matchesSpeed = speedFilters.contains { monster.speed == $0 }
+            }
+            
+            // Проверяем мировоззрение (OR внутри категории)
+            var matchesAlignment = true
+            if !alignmentFilters.isEmpty {
+                matchesAlignment = alignmentFilters.contains { monster.alignment == $0 }
+            }
+            
+            // Проверяем силу (OR внутри категории)
+            var matchesStr = true
+            if !strFilters.isEmpty {
+                matchesStr = strFilters.contains { monster.str == $0 }
+            }
+            
+            // Проверяем ловкость (OR внутри категории)
+            var matchesDex = true
+            if !dexFilters.isEmpty {
+                matchesDex = dexFilters.contains { monster.dex == $0 }
+            }
+            
+            // Проверяем телосложение (OR внутри категории)
+            var matchesCon = true
+            if !conFilters.isEmpty {
+                matchesCon = conFilters.contains { monster.con == $0 }
+            }
+            
+            // Проверяем интеллект (OR внутри категории)
+            var matchesIntilect = true
+            if !intilectFilters.isEmpty {
+                matchesIntilect = intilectFilters.contains { monster.intilect == $0 }
+            }
+            
+            // Проверяем мудрость (OR внутри категории)
+            var matchesWis = true
+            if !wisFilters.isEmpty {
+                matchesWis = wisFilters.contains { monster.wis == $0 }
+            }
+            
+            // Проверяем харизму (OR внутри категории)
+            var matchesChaStat = true
+            if !chaStatFilters.isEmpty {
+                matchesChaStat = chaStatFilters.contains { monster.cha == $0 }
+            }
+            
             // AND между категориями
-            return matchesBiom && matchesCha && matchesSize && matchesType
+            return matchesBiom && matchesCha && matchesSize && matchesType && matchesSkill &&
+                   matchesExp && matchesCr && matchesAc && matchesHp && matchesSpeed &&
+                   matchesAlignment && matchesStr && matchesDex && matchesCon &&
+                   matchesIntilect && matchesWis && matchesChaStat
         }
-        
-        applySnapshot(animatingDifferences: true)
     }
     
     func setupConstraints() {

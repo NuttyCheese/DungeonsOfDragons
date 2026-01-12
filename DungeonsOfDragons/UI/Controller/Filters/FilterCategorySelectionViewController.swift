@@ -101,6 +101,7 @@ private extension FilterCategorySelectionViewController {
         tableView.delegate = self
         tableView.backgroundColor = .clear
         tableView.keyboardDismissMode = .onDrag
+        tableView.separatorColor = .white
         tableView.register(FilterSelectionCell.self, forCellReuseIdentifier: FilterSelectionCell.description())
     }
     
@@ -159,6 +160,7 @@ final class FilterSelectionCell: UITableViewCell {
     func configure(with title: String, isSelected: Bool) {
         textLabel?.text = title
         textLabel?.textColor = .white
+        textLabel?.numberOfLines = 0
         backgroundColor = .clear
         selectionStyle = .default
         updateCheckbox(isSelected: isSelected)

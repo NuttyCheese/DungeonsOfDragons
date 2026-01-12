@@ -9,7 +9,7 @@ import Foundation
 
 struct SpellModel: Codable, Hashable {
     let nameEn, name: String?
-    let school: School?
+    let school: String?
     let level, castingTime: String?
     let range: String?
     let components: String?
@@ -41,7 +41,7 @@ enum School: String, Codable {
 }
 
 struct SpellClass: Codable, Hashable {
-    let name: SpellCaster?
+    let name: String?
     let selected: Bool?
 }
 

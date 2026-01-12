@@ -94,8 +94,8 @@ private extension MonsterInfoViewController {
         snapshot.appendSections([.details])
         snapshot.appendItems([
             .detail("Имя", monsterModel.name),
-            .detail("Размер", monsterModel.size.rawValue),
-            .detail("Тип", monsterModel.type.rawValue),
+            .detail("Размер", monsterModel.size),
+            .detail("Тип", monsterModel.type),
             .detail("Моральное лицо", monsterModel.alignment),
             .detail("Класс брони", monsterModel.ac),
             .detail("Очки здоровья", monsterModel.hp),

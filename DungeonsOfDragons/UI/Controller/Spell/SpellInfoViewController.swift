@@ -159,7 +159,7 @@ private extension SpellInfoViewController {
             sections.append(Section(title: "Название", rows: [name]))
         }
 
-        if let school = spellModel.school?.rawValue, !school.isEmpty {
+        if let school = spellModel.school, !school.isEmpty {
             sections.append(Section(title: "Школа магии", rows: [school]))
         }
 
@@ -188,7 +188,7 @@ private extension SpellInfoViewController {
         }
 
         if let spellClasses = spellModel.spellClass, !spellClasses.isEmpty {
-            let classes = spellClasses.compactMap { $0.name?.rawValue }
+            let classes = spellClasses.compactMap { $0.name }
             if !classes.isEmpty {
                 sections.append(Section(title: "Классы", rows: classes))
             }
