@@ -58,7 +58,13 @@ extension SpellListViewController: UISearchResultsUpdating {
 
 extension SpellListViewController: SpellInfoViewControllerDelegate {
     func pressToFavoriteSpell(spell: SpellModel, isFavorite: Bool) {
-        // Обработка избранного
+        if isFavorite {
+            FavoritesManager.shared.addSpellToFavorites(spell.name ?? "")
+        } else {
+            FavoritesManager.shared.removeSpellFromFavorites(spell.name ?? "")
+        }
+        
+        applySnapshot()
     }
 }
 
@@ -123,8 +129,7 @@ private extension SpellListViewController {
             let spellName = spell.name ?? ""
             let isFavorite = FavoritesManager.shared.isSpellFavorite(spellName)
             cell.confuguration(spell, isFavorite: isFavorite)
-            cell.favoriteCompletion = { [weak self] data, isFavorite in
-                guard let self else { return }
+            cell.favoriteCompletion = { data, isFavorite in
                 let spellName = data.name ?? ""
                 if isFavorite {
                     FavoritesManager.shared.addSpellToFavorites(spellName)

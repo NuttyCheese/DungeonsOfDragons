@@ -38,8 +38,20 @@ final class MonsterListViewController: BaseViewController {
 }
 
 extension MonsterListViewController: MonsterInfoViewControllerDelegate {
-    func pressToFavoriteMonster(spell: MonsterModel, isFavorite: Bool) {
+    func pressToFavoriteMonster(monster: MonsterModel, isFavorite: Bool) {
+        if isFavorite {
+            FavoritesManager.shared.addMonsterToFavorites(monster.name)
+        } else {
+            FavoritesManager.shared.removeMonsterFromFavorites(monster.name)
+        }
         
+        applySnapshot(animatingDifferences: true)
+    }
+}
+
+extension MonsterListViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        collectionView.reloadData()
     }
 }
 
@@ -49,6 +61,7 @@ extension MonsterListViewController: UICollectionViewDelegate {
         
         let vc = MonsterInfoViewController(monsterModel: monsterModel)
         vc.delegate = self
+        vc.presentationController?.delegate = self
         present(vc, animated: true)
     }
 }

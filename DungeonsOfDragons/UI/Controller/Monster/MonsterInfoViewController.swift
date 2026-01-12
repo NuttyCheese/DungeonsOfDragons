@@ -8,7 +8,7 @@
 import UIKit
 
 protocol MonsterInfoViewControllerDelegate: AnyObject {
-    func pressToFavoriteMonster(spell: MonsterModel, isFavorite: Bool)
+    func pressToFavoriteMonster(monster: MonsterModel, isFavorite: Bool)
 }
 
 final class MonsterInfoViewController: BaseViewController {
@@ -70,7 +70,7 @@ private extension MonsterInfoViewController {
                         } else {
                             FavoritesManager.shared.removeMonsterFromFavorites(self.monsterModel.name)
                         }
-                        self.delegate?.pressToFavoriteMonster(spell: self.monsterModel, isFavorite: isFavorite)
+                        self.delegate?.pressToFavoriteMonster(monster: self.monsterModel, isFavorite: isFavorite)
                     }
                     return cell
                 case .detail(let title, let value):

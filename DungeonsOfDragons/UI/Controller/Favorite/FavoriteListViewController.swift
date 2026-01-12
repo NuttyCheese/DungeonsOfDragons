@@ -130,11 +130,50 @@ final class FavoriteListViewController: BaseViewController {
     }
 }
 
+extension FavoriteListViewController: MonsterInfoViewControllerDelegate, SpellInfoViewControllerDelegate {
+    func pressToFavoriteMonster(monster: MonsterModel, isFavorite: Bool) {
+        if isFavorite {
+            if !favoriteMonsters.contains(where: { $0.name == monster.name }) {
+                favoriteMonsters.append(monster)
+            }
+        } else {
+            favoriteMonsters.removeAll { $0.name == monster.name }
+        }
+        
+        updateSegmentControlVisibility()
+        updateVisibleContent()
+    }
+    
+    func pressToFavoriteSpell(spell: SpellModel, isFavorite: Bool) {
+        if isFavorite {
+            if !favoriteSpells.contains(where: { $0.name == spell.name }) {
+                favoriteSpells.append(spell)
+            }
+        } else {
+            favoriteSpells.removeAll { $0.name == spell.name }
+        }
+        
+        updateSegmentControlVisibility()
+        updateVisibleContent()
+    }
+}
+
+extension FavoriteListViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        collectionView.reloadData()
+        tableView.reloadData()
+    }
+}
+
 // MARK: - Collection View Delegate
 extension FavoriteListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let monsterModel = monsterDataSource.itemIdentifier(for: indexPath) else { return }
-        // Обработка нажатия на монстра
+        
+        let vc = MonsterInfoViewController(monsterModel: monsterModel)
+        vc.delegate = self
+        vc.presentationController?.delegate = self
+        present(vc, animated: true)
     }
 }
 
@@ -142,7 +181,11 @@ extension FavoriteListViewController: UICollectionViewDelegate {
 extension FavoriteListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let spellModel = spellDataSource.itemIdentifier(for: indexPath) else { return }
-        // Обработка нажатия на заклинание
+        
+        let vc = SpellInfoViewController(spellModel: spellModel)
+        vc.delegate = self
+        vc.presentationController?.delegate = self
+        present(vc, animated: true)
     }
 }
 
