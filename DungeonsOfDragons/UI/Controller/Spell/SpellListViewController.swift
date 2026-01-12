@@ -10,6 +10,7 @@ import UIKit
 final class SpellListViewController: BaseViewController {
     private var spellsModel = [SpellModel]()
     private var filteredSpellsModel = [SpellModel]()
+    private var selectedFilters: [SpellFilterValue] = []
     
     private let tableView = UITableView()
     private let searchController = UISearchController(searchResultsController: nil)
@@ -35,20 +36,68 @@ final class SpellListViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Обновляем snapshot при возврате на экран для отображения актуального состояния избранного
-        applySnapshot()
+        // Применяем фильтры при возврате на экран
+        if !selectedFilters.isEmpty {
+            applyFilters()
+        } else {
+            applySnapshot()
+        }
     }
 }
 
 extension SpellListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text?.lowercased(), !searchText.isEmpty else {
-            filteredSpellsModel = spellsModel
-            applySnapshot()
+            // Применяем фильтры если они есть
+            if !selectedFilters.isEmpty {
+                filterSpells()
+            } else {
+                filteredSpellsModel = spellsModel
+                applySnapshot()
+            }
             return
         }
         
-        filteredSpellsModel = spellsModel.filter {
+        // Сначала фильтруем по выбранным фильтрам
+        var baseFiltered = spellsModel
+        if !selectedFilters.isEmpty {
+            // Группируем фильтры по категориям
+            let schoolFilters = selectedFilters.compactMap { filter -> School? in
+                if case .school(let school) = filter {
+                    return school
+                }
+                return nil
+            }
+            
+            let casterFilters = selectedFilters.compactMap { filter -> SpellCaster? in
+                if case .spellCaster(let caster) = filter {
+                    return caster
+                }
+                return nil
+            }
+            
+            baseFiltered = spellsModel.filter { spell in
+                // Проверяем школу (OR внутри категории)
+                var matchesSchool = true
+                if !schoolFilters.isEmpty {
+                    matchesSchool = schoolFilters.contains { spell.school == $0 }
+                }
+                
+                // Проверяем класс заклинателя (OR внутри категории)
+                var matchesCaster = true
+                if !casterFilters.isEmpty {
+                    matchesCaster = casterFilters.contains { caster in
+                        spell.spellClass?.contains { $0.name == caster } ?? false
+                    }
+                }
+                
+                // AND между категориями
+                return matchesSchool && matchesCaster
+            }
+        }
+        
+        // Затем фильтруем по поисковому запросу
+        filteredSpellsModel = baseFiltered.filter {
             $0.name?.lowercased().contains(searchText) ?? false || 
             $0.nameEn?.lowercased().contains(searchText) ?? false
         }
@@ -102,7 +151,84 @@ private extension SpellListViewController {
         searchController.searchBar.placeholder = "Поиск заклинаний"
         
         navigationItem.searchController = searchController
+        
+        let rightButtonItem = UIBarButtonItem.init(
+            title: "Фильтр",
+            style: .plain,
+            target: self,
+            action: #selector(rightButtonAction)
+        )
+        
+        navigationItem.rightBarButtonItem = rightButtonItem
+        
         definesPresentationContext = true
+    }
+    
+    @objc func rightButtonAction(sender: UIBarButtonItem) {
+        let vc = SpellFilterListViewController(spells: spellsModel, selectedFilters: selectedFilters)
+        
+        vc.onFiltersChanged = { [weak self] newFilters in
+            guard let self = self else { return }
+            self.selectedFilters = newFilters
+        }
+        
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func applyFilters() {
+        activityIndicator.startAnimating()
+        view.bringSubviewToFront(activityIndicator)
+        
+        // Имитируем небольшую задержку для показа прелоадера
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
+            self.filterSpells()
+            self.activityIndicator.stopAnimating()
+        }
+    }
+    
+    func filterSpells() {
+        guard !selectedFilters.isEmpty else {
+            filteredSpellsModel = spellsModel
+            applySnapshot()
+            return
+        }
+        
+        // Группируем фильтры по категориям
+        let schoolFilters = selectedFilters.compactMap { filter -> School? in
+            if case .school(let school) = filter {
+                return school
+            }
+            return nil
+        }
+        
+        let casterFilters = selectedFilters.compactMap { filter -> SpellCaster? in
+            if case .spellCaster(let caster) = filter {
+                return caster
+            }
+            return nil
+        }
+        
+        filteredSpellsModel = spellsModel.filter { spell in
+            // Проверяем школу (OR внутри категории)
+            var matchesSchool = true
+            if !schoolFilters.isEmpty {
+                matchesSchool = schoolFilters.contains { spell.school == $0 }
+            }
+            
+            // Проверяем класс заклинателя (OR внутри категории)
+            var matchesCaster = true
+            if !casterFilters.isEmpty {
+                matchesCaster = casterFilters.contains { caster in
+                    spell.spellClass?.contains { $0.name == caster } ?? false
+                }
+            }
+            
+            // AND между категориями
+            return matchesSchool && matchesCaster
+        }
+        
+        applySnapshot()
     }
     
     func setupConstraints() {
