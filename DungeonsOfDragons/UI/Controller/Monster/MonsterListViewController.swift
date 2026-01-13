@@ -17,6 +17,7 @@ final class MonsterListViewController: BaseViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Int, MonsterModel>!
     private let searchController = UISearchController(searchResultsController: nil)
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let emptyStateLabel = UILabel()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -38,7 +39,10 @@ final class MonsterListViewController: BaseViewController {
         if !selectedFilters.isEmpty {
             applyFilters()
         } else {
+            // Если фильтры пустые, сбрасываем к исходному списку
+            filteredMonstersModel = monstersModel
             applySnapshot(animatingDifferences: false)
+            updateEmptyStateVisibility()
         }
     }
 }
@@ -92,6 +96,7 @@ private extension MonsterListViewController {
         snapshot.appendSections([0])
         snapshot.appendItems(filteredMonstersModel, toSection: 0)
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        updateEmptyStateVisibility()
     }
 }
 
@@ -120,6 +125,7 @@ extension MonsterListViewController: UISearchResultsUpdating {
             $0.name.lowercased().contains(searchText) || $0.pdfName.lowercased().contains(searchText)
         }
         applySnapshot(animatingDifferences: true)
+        updateEmptyStateVisibility()
     }
 }
 
@@ -130,14 +136,27 @@ private extension MonsterListViewController {
         setupCollectionView()
         setupSearchController()
         setupActivityIndicator()
+        setupEmptyStateLabel()
         
         view.addSubview(collectionView)
+        view.addSubview(emptyStateLabel)
         setupConstraints()
+        updateEmptyStateVisibility()
     }
     
     func setupActivityIndicator() {
         activityIndicator.color = .white
         activityIndicator.hidesWhenStopped = true
+    }
+    
+    func setupEmptyStateLabel() {
+        emptyStateLabel.text = "По заданным фильтрам нет результата"
+        emptyStateLabel.textColor = .white
+        emptyStateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        emptyStateLabel.textAlignment = .center
+        emptyStateLabel.numberOfLines = 0
+        emptyStateLabel.isHidden = true
+        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
     }
     
     func setupCollectionView() {
@@ -186,6 +205,13 @@ private extension MonsterListViewController {
         vc.onFiltersChanged = { [weak self] newFilters in
             guard let self = self else { return }
             self.selectedFilters = newFilters
+            // Немедленно применяем фильтры при изменении
+            if newFilters.isEmpty {
+                self.filteredMonstersModel = self.monstersModel
+                self.applySnapshot(animatingDifferences: true)
+            } else {
+                self.filterMonsters()
+            }
         }
         
         navigationController?.pushViewController(vc, animated: true)
@@ -466,7 +492,18 @@ private extension MonsterListViewController {
             collectionView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 32),
+            emptyStateLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -32)
         ])
+    }
+    
+    func updateEmptyStateVisibility() {
+        let shouldShow = !selectedFilters.isEmpty && filteredMonstersModel.isEmpty && !monstersModel.isEmpty
+        emptyStateLabel.isHidden = !shouldShow
+        collectionView.isHidden = shouldShow
     }
 }

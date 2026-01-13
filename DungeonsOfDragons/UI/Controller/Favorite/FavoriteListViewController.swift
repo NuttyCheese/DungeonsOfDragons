@@ -189,66 +189,6 @@ extension FavoriteListViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - Data Source Setup
-private extension FavoriteListViewController {
-    func setupMonsterDataSource() {
-        monsterDataSource = UICollectionViewDiffableDataSource<Int, MonsterModel>(collectionView: collectionView) { collectionView, indexPath, monster in
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MonsterCollectionViewCell.description(), for: indexPath) as? MonsterCollectionViewCell else {
-                return UICollectionViewCell()
-            }
-            cell.configure(data: monster, isFavorite: true)
-            cell.favoriteCompletion = { [weak self] data, isFavorite in
-                guard let self else { return }
-                if isFavorite {
-                    FavoritesManager.shared.addMonsterToFavorites(data.name)
-                } else {
-                    FavoritesManager.shared.removeMonsterFromFavorites(data.name)
-                }
-                // Обновляем список избранных
-                self.updateFavorites()
-            }
-            return cell
-        }
-    }
-    
-    func setupSpellDataSource() {
-        spellDataSource = UITableViewDiffableDataSource<Int, SpellModel>(tableView: tableView) { tableView, indexPath, spell in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: SpellTableViewCell.description(), for: indexPath) as? SpellTableViewCell else {
-                return UITableViewCell()
-            }
-            cell.backgroundColor = .clear
-            cell.selectionStyle = .none
-            cell.confuguration(spell, isFavorite: true)
-            cell.favoriteCompletion = { [weak self] data, isFavorite in
-                guard let self else { return }
-                let spellName = data.name ?? ""
-                if isFavorite {
-                    FavoritesManager.shared.addSpellToFavorites(spellName)
-                } else {
-                    FavoritesManager.shared.removeSpellFromFavorites(spellName)
-                }
-                // Обновляем список избранных
-                self.updateFavorites()
-            }
-            return cell
-        }
-    }
-    
-    func applyMonsterSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, MonsterModel>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(favoriteMonsters, toSection: 0)
-        monsterDataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    func applySpellSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, SpellModel>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(favoriteSpells, toSection: 0)
-        spellDataSource.apply(snapshot, animatingDifferences: true)
-    }
-}
-
 // MARK: - View Setup
 private extension FavoriteListViewController {
     func setupView() {
@@ -305,6 +245,63 @@ private extension FavoriteListViewController {
         emptyLabel.textAlignment = .center
         emptyLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         emptyLabel.isHidden = true
+    }
+    
+    func setupMonsterDataSource() {
+        monsterDataSource = UICollectionViewDiffableDataSource<Int, MonsterModel>(collectionView: collectionView) { collectionView, indexPath, monster in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MonsterCollectionViewCell.description(), for: indexPath) as? MonsterCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.configure(data: monster, isFavorite: true)
+            cell.favoriteCompletion = { [weak self] data, isFavorite in
+                guard let self else { return }
+                if isFavorite {
+                    FavoritesManager.shared.addMonsterToFavorites(data.name)
+                } else {
+                    FavoritesManager.shared.removeMonsterFromFavorites(data.name)
+                }
+                // Обновляем список избранных
+                self.updateFavorites()
+            }
+            return cell
+        }
+    }
+    
+    func setupSpellDataSource() {
+        spellDataSource = UITableViewDiffableDataSource<Int, SpellModel>(tableView: tableView) { tableView, indexPath, spell in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SpellTableViewCell.description(), for: indexPath) as? SpellTableViewCell else {
+                return UITableViewCell()
+            }
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
+            cell.confuguration(spell, isFavorite: true)
+            cell.favoriteCompletion = { [weak self] data, isFavorite in
+                guard let self else { return }
+                let spellName = data.name ?? ""
+                if isFavorite {
+                    FavoritesManager.shared.addSpellToFavorites(spellName)
+                } else {
+                    FavoritesManager.shared.removeSpellFromFavorites(spellName)
+                }
+                // Обновляем список избранных
+                self.updateFavorites()
+            }
+            return cell
+        }
+    }
+    
+    func applyMonsterSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, MonsterModel>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(favoriteMonsters, toSection: 0)
+        monsterDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func applySpellSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, SpellModel>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(favoriteSpells, toSection: 0)
+        spellDataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func setupConstraints() {

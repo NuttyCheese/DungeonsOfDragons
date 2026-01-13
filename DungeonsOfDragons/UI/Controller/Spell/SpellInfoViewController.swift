@@ -134,14 +134,32 @@ private extension SpellInfoViewController {
 
 // MARK: - UITableViewDelegate
 extension SpellInfoViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return visibleSections[section].title
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section < visibleSections.count else { return nil }
+        
+        let containerView = UIView()
+        containerView.backgroundColor = .clear
+        
+        let label = UILabel()
+        label.text = visibleSections[section].title
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -4)
+        ])
+        
+        return containerView
     }
-
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let header = view as? UITableViewHeaderFooterView {
-            header.textLabel?.textColor = .white
-        }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
     }
 }
 

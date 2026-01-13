@@ -16,6 +16,7 @@ final class SpellListViewController: BaseViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private var dataSource: UITableViewDiffableDataSource<Int, SpellModel>!
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let emptyStateLabel = UILabel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +41,10 @@ final class SpellListViewController: BaseViewController {
         if !selectedFilters.isEmpty {
             applyFilters()
         } else {
+            // Если фильтры пустые, сбрасываем к исходному списку
+            filteredSpellsModel = spellsModel
             applySnapshot()
+            updateEmptyStateVisibility()
         }
     }
 }
@@ -70,6 +74,7 @@ extension SpellListViewController: UISearchResultsUpdating {
             $0.nameEn?.lowercased().contains(searchText) ?? false
         }
         applySnapshot()
+        updateEmptyStateVisibility()
     }
 }
 
@@ -99,9 +104,11 @@ private extension SpellListViewController {
     func setupView() {
         title = "Заклинания"
         setupTableView()
+        setupEmptyStateLabel()
         
-        view.subviewsOnView(tableView, activityIndicator)
+        view.subviewsOnView(tableView, activityIndicator, emptyStateLabel)
         setupConstraints()
+        updateEmptyStateVisibility()
     }
     
     func setupTableView() {
@@ -138,6 +145,13 @@ private extension SpellListViewController {
         vc.onFiltersChanged = { [weak self] newFilters in
             guard let self = self else { return }
             self.selectedFilters = newFilters
+            // Немедленно применяем фильтры при изменении
+            if newFilters.isEmpty {
+                self.filteredSpellsModel = self.spellsModel
+                self.applySnapshot()
+            } else {
+                self.filterSpells()
+            }
         }
         
         navigationController?.pushViewController(vc, animated: true)
@@ -281,7 +295,12 @@ private extension SpellListViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyStateLabel.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 32),
+            emptyStateLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -32)
         ])
     }
     
@@ -314,10 +333,27 @@ private extension SpellListViewController {
         snapshot.appendSections([0])
         snapshot.appendItems(filteredSpellsModel, toSection: 0)
         dataSource.apply(snapshot, animatingDifferences: false)
+        updateEmptyStateVisibility()
     }
     
     func setupActivityIndicator() {
         activityIndicator.color = .white
         activityIndicator.hidesWhenStopped = true
+    }
+    
+    func setupEmptyStateLabel() {
+        emptyStateLabel.text = "По заданным фильтрам нет результата"
+        emptyStateLabel.textColor = .white
+        emptyStateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        emptyStateLabel.textAlignment = .center
+        emptyStateLabel.numberOfLines = 0
+        emptyStateLabel.isHidden = true
+        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func updateEmptyStateVisibility() {
+        let shouldShow = !selectedFilters.isEmpty && filteredSpellsModel.isEmpty && !spellsModel.isEmpty
+        emptyStateLabel.isHidden = !shouldShow
+        tableView.isHidden = shouldShow
     }
 }

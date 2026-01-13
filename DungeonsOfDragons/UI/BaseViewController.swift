@@ -15,7 +15,14 @@ class BaseViewController: UIViewController {
         setupGradientBackground()
     }
 
-    private func setupGradientBackground() {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        gradientLayer?.frame = view.bounds
+    }
+}
+
+private extension BaseViewController {
+    func setupGradientBackground() {
         let gradient = CAGradientLayer()
         gradient.frame = view.bounds
         gradient.colors = [
@@ -27,10 +34,5 @@ class BaseViewController: UIViewController {
         
         view.layer.insertSublayer(gradient, at: 0)
         self.gradientLayer = gradient
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        gradientLayer?.frame = view.bounds
     }
 }
