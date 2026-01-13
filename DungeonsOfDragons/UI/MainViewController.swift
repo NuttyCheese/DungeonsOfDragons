@@ -30,8 +30,6 @@ final class MainViewController: BaseViewController {
     private let favoriteStack = UIStackView()
     private let settingsStack = UIStackView()
     
-    private var diceHostingController: UIHostingController<DiceModalView>?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -51,7 +49,8 @@ final class MainViewController: BaseViewController {
                 let vc = MonsterListViewController()
                 navigationController?.pushViewController(vc, animated: true)
             case 2:
-                showDiceModal()
+                let vc = DiceViewController()
+                navigationController?.pushViewController(vc, animated: true)
             case 3:
                 let vc = SpellListViewController()
                 navigationController?.pushViewController(vc, animated: true)
@@ -149,47 +148,6 @@ private extension MainViewController {
         labels.forEach { label in
             label.textColor = style.primaryTextColor
         }
-    }
-
-    private func showDiceModal() {
-        guard diceHostingController == nil else { return }
-
-        let isPresented = Binding(
-            get: { self.diceHostingController != nil },
-            set: { newValue in
-                if !newValue {
-                    self.dismissDiceModal()
-                }
-            }
-        )
-
-        let diceView = DiceModalView(isPresented: isPresented)
-        let hostingController = UIHostingController(rootView: diceView)
-        hostingController.view.backgroundColor = .clear
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-
-        NSLayoutConstraint.activate([
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        hostingController.didMove(toParent: self)
-        self.diceHostingController = hostingController
-    }
-
-    func dismissDiceModal() {
-        guard let hostingController = diceHostingController else { return }
-
-        hostingController.willMove(toParent: nil)
-        hostingController.view.removeFromSuperview()
-        hostingController.removeFromParent()
-
-        diceHostingController = nil
     }
 }
 
