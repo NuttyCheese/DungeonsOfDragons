@@ -28,13 +28,25 @@ final class FilterSelectionCell: UITableViewCell {
     
     func configure(with title: String, isSelected: Bool) {
         textLabel?.text = title
-        textLabel?.textColor = .white
         textLabel?.numberOfLines = 0
         
         backgroundColor = .clear
         selectionStyle = .default
         
         updateCheckbox(isSelected: isSelected)
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        textLabel?.textColor = style.primaryTextColor
+        updateCheckboxBorderColor(style: style)
+    }
+    
+    func updateCheckboxBorderColor(style: StyleModel) {
+        if checkboxView.backgroundColor == .clear {
+            checkboxView.layer.borderColor = style.borderColor.withAlphaComponent(0.7).cgColor
+        }
     }
 }
 
@@ -46,7 +58,6 @@ private extension FilterSelectionCell {
         checkboxView.layer.cornerRadius = 12
         
         checkmarkImageView.image = UIImage(systemName: "checkmark")
-        checkmarkImageView.tintColor = .white
         checkmarkImageView.contentMode = .scaleAspectFit
         checkmarkImageView.translatesAutoresizingMaskIntoConstraints = false
         checkmarkImageView.isHidden = true
@@ -63,13 +74,15 @@ private extension FilterSelectionCell {
     }
     
     func updateCheckbox(isSelected: Bool) {
+        let style = DesignManager.shared.getCurrentStyle()
         if isSelected {
-            checkboxView.backgroundColor = .systemGreen
-            checkboxView.layer.borderColor = UIColor.systemGreen.cgColor
+            checkboxView.backgroundColor = style.accentColor
+            checkboxView.layer.borderColor = style.accentColor.cgColor
+            checkmarkImageView.tintColor = style.primaryTextColor
             checkmarkImageView.isHidden = false
         } else {
             checkboxView.backgroundColor = .clear
-            checkboxView.layer.borderColor = UIColor.white.withAlphaComponent(0.7).cgColor
+            checkboxView.layer.borderColor = style.borderColor.withAlphaComponent(0.7).cgColor
             checkmarkImageView.isHidden = true
         }
     }

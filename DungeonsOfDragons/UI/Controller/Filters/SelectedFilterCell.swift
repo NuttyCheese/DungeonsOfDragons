@@ -26,7 +26,6 @@ final class SelectedFilterCell: UICollectionViewCell {
         titleLabel.text = nil
         removeAction = nil
         removeButton.setImage(UIImage(systemName: "minus.circle.fill"), for: .normal)
-        removeButton.tintColor = .white
         removeButton.isEnabled = true
     }
     
@@ -34,6 +33,14 @@ final class SelectedFilterCell: UICollectionViewCell {
         titleLabel.text = title
         self.removeAction = removeAction
         removeButton.setImage(UIImage(systemName: "minus.circle.fill"), for: .normal)
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        contentView.backgroundColor = style.secondaryBackgroundColor.withAlphaComponent(0.6)
+        titleLabel.textColor = style.primaryTextColor
+        removeButton.tintColor = style.iconColor
     }
     
     @objc private func removeButtonTapped() {
@@ -43,7 +50,6 @@ final class SelectedFilterCell: UICollectionViewCell {
 
 private extension SelectedFilterCell {
     func setupView() {
-        contentView.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         contentView.layer.cornerRadius = 18
         contentView.layer.masksToBounds = true
         
@@ -56,7 +62,6 @@ private extension SelectedFilterCell {
     
     func setupLabel() {
         titleLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        titleLabel.textColor = .white
         titleLabel.textAlignment = .left
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byClipping
@@ -66,7 +71,6 @@ private extension SelectedFilterCell {
     
     func setupButton() {
         removeButton.setImage(UIImage(systemName: "minus.circle.fill"), for: .normal)
-        removeButton.tintColor = .white
         removeButton.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)
     }
     

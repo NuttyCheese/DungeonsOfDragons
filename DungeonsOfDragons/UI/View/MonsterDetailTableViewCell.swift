@@ -21,26 +21,32 @@ final class MonsterDetailTableViewCell: UITableViewCell {
     }
 
     func configure(title: String, value: String) {
-        titleLabel.attributedText = htmlToAttributedString(html: title, textColor: .gray)
-        valueLabel.attributedText = htmlToAttributedString(html: value, textColor: .white)
+        let style = DesignManager.shared.getCurrentStyle()
+        titleLabel.attributedText = htmlToAttributedString(html: title, textColor: style.secondaryTextColor)
+        valueLabel.attributedText = htmlToAttributedString(html: value, textColor: style.primaryTextColor)
+        applyStyles()
     }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        stackView.backgroundColor = style.secondaryBackgroundColor
+    }
+    
+    private var stackView: UIStackView!
 }
 
 private extension MonsterDetailTableViewCell {
     func setupView() {
         titleLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         titleLabel.numberOfLines = 0
-        titleLabel.textColor = .gray
         
         valueLabel.font = UIFont.preferredFont(forTextStyle: .body)
         valueLabel.numberOfLines = 0
         valueLabel.lineBreakMode = .byWordWrapping
-        valueLabel.textColor = .white
         
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
+        stackView = UIStackView(arrangedSubviews: [titleLabel, valueLabel])
         stackView.axis = .vertical
         stackView.spacing = 4
-        stackView.backgroundColor = .black
         stackView.layer.cornerRadius = 8
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.isLayoutMarginsRelativeArrangement = true

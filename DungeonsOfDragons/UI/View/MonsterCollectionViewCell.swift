@@ -34,6 +34,22 @@ final class MonsterCollectionViewCell: UICollectionViewCell {
         
         titleLabel.text = data.name
         iconButton.isSelected = isFavorite
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        contentView.backgroundColor = style.secondaryBackgroundColor
+        titleLabel.textColor = style.primaryTextColor
+        
+        iconButton.setImage(
+            UIImage(systemName: "star")?.withTintColor(style.iconColor, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        iconButton.setImage(
+            UIImage(systemName: "star.fill")?.withTintColor(style.accentColor, renderingMode: .alwaysOriginal),
+            for: .selected
+        )
     }
     
     @objc private func iconButtonTapped() {
@@ -47,7 +63,6 @@ final class MonsterCollectionViewCell: UICollectionViewCell {
 
 private extension MonsterCollectionViewCell {
     func setupView() {
-        contentView.backgroundColor = .black
         contentView.layer.cornerRadius = 8
         
         setupLabel()
@@ -61,7 +76,6 @@ private extension MonsterCollectionViewCell {
     
     func setupLabel() {
         titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
     }
@@ -76,15 +90,6 @@ private extension MonsterCollectionViewCell {
     
     func setupButton() {
         iconButton.tintColor = .clear
-        
-        iconButton.setImage(
-            UIImage(systemName: "star")?.withTintColor(.black, renderingMode: .alwaysOriginal),
-            for: .normal
-        )
-        iconButton.setImage(
-            UIImage(systemName: "star.fill")?.withTintColor(.red, renderingMode: .alwaysOriginal),
-            for: .selected
-        )
         iconButton.addTarget(self, action: #selector(iconButtonTapped), for: .touchUpInside)
     }
     

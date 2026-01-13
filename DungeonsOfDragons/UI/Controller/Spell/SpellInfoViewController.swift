@@ -37,6 +37,28 @@ final class SpellInfoViewController: BaseViewController {
         updateFavoriteButtonState()
         configureDataSource()
         applySnapshot()
+        applyStyles()
+    }
+    
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        
+        favoriteButton.setImage(
+            UIImage(systemName: "star")?.withTintColor(style.iconColor, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        favoriteButton.setImage(
+            UIImage(systemName: "star.fill")?.withTintColor(style.accentColor, renderingMode: .alwaysOriginal),
+            for: .selected
+        )
+        
+        // Обновляем ячейки
+        tableView.reloadData()
     }
 }
 
@@ -63,15 +85,6 @@ private extension SpellInfoViewController {
 
     func setupFavoriteButton() {
         favoriteButton.tintColor = .clear
-        
-        favoriteButton.setImage(
-            UIImage(systemName: "star")?.withTintColor(.white, renderingMode: .alwaysOriginal),
-            for: .normal
-        )
-        favoriteButton.setImage(
-            UIImage(systemName: "star.fill")?.withTintColor(.yellow, renderingMode: .alwaysOriginal),
-            for: .selected
-        )
         favoriteButton.addTarget(self, action: #selector(iconButtonTapped), for: .touchUpInside)
 
         view.addSubview(favoriteButton)
@@ -86,13 +99,14 @@ private extension SpellInfoViewController {
     }
 
     func configureDataSource() {
+        let style = DesignManager.shared.getCurrentStyle()
         dataSource = UITableViewDiffableDataSource<Int, String>(tableView: tableView) { tableView, indexPath, row in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             cell.textLabel?.text = row
             cell.selectionStyle = .none
-            cell.backgroundColor = .black
+            cell.backgroundColor = style.secondaryBackgroundColor
             cell.textLabel?.numberOfLines = 0
-            cell.textLabel?.textColor = .white
+            cell.textLabel?.textColor = style.primaryTextColor
             return cell
         }
         
@@ -142,7 +156,8 @@ extension SpellInfoViewController: UITableViewDelegate {
         
         let label = UILabel()
         label.text = visibleSections[section].title
-        label.textColor = .white
+        let style = DesignManager.shared.getCurrentStyle()
+        label.textColor = style.primaryTextColor
         label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         label.translatesAutoresizingMaskIntoConstraints = false
         

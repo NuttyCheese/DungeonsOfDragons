@@ -21,6 +21,12 @@ final class SectionHeaderView: UICollectionReusableView {
     
     func configure(with title: String) {
         titleLabel.text = title
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        titleLabel.textColor = style.primaryTextColor
     }
 }
 
@@ -29,7 +35,6 @@ private extension SectionHeaderView {
         backgroundColor = .clear
         
         titleLabel.font = .systemFont(ofSize: 18, weight: .semibold)
-        titleLabel.textColor = .white
         
         addSubview(titleLabel)
         titleLabel.tAMIC()

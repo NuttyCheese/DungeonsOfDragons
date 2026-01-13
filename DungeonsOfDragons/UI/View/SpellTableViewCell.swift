@@ -29,24 +29,40 @@ final class SpellTableViewCell: UITableViewCell {
         
         let name = data.name
         let nameEn = data.nameEn
+        let style = DesignManager.shared.getCurrentStyle()
         
         let attributedString = NSMutableAttributedString(
             string: "\(name ?? "Unknown")\n",
             attributes: [
-                .foregroundColor: UIColor.white,
+                .foregroundColor: style.primaryTextColor,
                 .font: UIFont.systemFont(ofSize: 16)
             ]
         )
         let nameEnString = NSAttributedString(
             string: "\(nameEn ?? "Unknown")",
             attributes: [
-                .foregroundColor: UIColor.lightGray,
+                .foregroundColor: style.secondaryTextColor,
                 .font: UIFont.systemFont(ofSize: 12)
             ]
         )
         attributedString.append(nameEnString)
         titleLabel.attributedText = attributedString
         iconButton.isSelected = isFavorite
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        containerView.backgroundColor = style.secondaryBackgroundColor
+        
+        iconButton.setImage(
+            UIImage(systemName: "star")?.withTintColor(style.iconColor, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        iconButton.setImage(
+            UIImage(systemName: "star.fill")?.withTintColor(style.accentColor, renderingMode: .alwaysOriginal),
+            for: .selected
+        )
     }
     
     @objc private func iconButtonTapped() {
@@ -60,7 +76,6 @@ final class SpellTableViewCell: UITableViewCell {
 
 private extension SpellTableViewCell {
     func setupView() {
-        containerView.backgroundColor = .black
         containerView.layer.cornerRadius = 8
         
         setupLabel()
@@ -72,22 +87,12 @@ private extension SpellTableViewCell {
     }
     
     func setupLabel() {
-        titleLabel.textColor = .white
         titleLabel.numberOfLines = 0
         titleLabel.font = UIFont.systemFont(ofSize: 16)
     }
     
     func setupIconButton() {
         iconButton.tintColor = .clear
-        
-        iconButton.setImage(
-            UIImage(systemName: "star")?.withTintColor(.white, renderingMode: .alwaysOriginal),
-            for: .normal
-        )
-        iconButton.setImage(
-            UIImage(systemName: "star.fill")?.withTintColor(.yellow, renderingMode: .alwaysOriginal),
-            for: .selected
-        )
         iconButton.addTarget(self, action: #selector(iconButtonTapped), for: .touchUpInside)
     }
 }

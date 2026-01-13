@@ -28,12 +28,19 @@ final class FavoriteListViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        applyStyles()
         loadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateFavorites()
+        applyStyles()
+    }
+    
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyStyles()
     }
     
     // MARK: - Private Methods
@@ -241,10 +248,15 @@ private extension FavoriteListViewController {
     
     func setupEmptyLabel() {
         emptyLabel.text = "Нет избранных элементов"
-        emptyLabel.textColor = .white
         emptyLabel.textAlignment = .center
         emptyLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         emptyLabel.isHidden = true
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        emptyLabel.textColor = style.primaryTextColor
+        segmentControl.selectedSegmentTintColor = style.accentColor
     }
     
     func setupMonsterDataSource() {

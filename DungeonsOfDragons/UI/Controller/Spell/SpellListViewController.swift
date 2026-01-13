@@ -24,6 +24,7 @@ final class SpellListViewController: BaseViewController {
         setupSearchController()
         setupDataSource()
         setupActivityIndicator()
+        applyStyles()
         
         activityIndicator.startAnimating()
         DataSourceRemote.shared.getSpells { [weak self] response in
@@ -46,6 +47,12 @@ final class SpellListViewController: BaseViewController {
             applySnapshot()
             updateEmptyStateVisibility()
         }
+        applyStyles()
+    }
+    
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyStyles()
     }
 }
 
@@ -337,18 +344,26 @@ private extension SpellListViewController {
     }
     
     func setupActivityIndicator() {
-        activityIndicator.color = .white
         activityIndicator.hidesWhenStopped = true
     }
     
     func setupEmptyStateLabel() {
         emptyStateLabel.text = "По заданным фильтрам нет результата"
-        emptyStateLabel.textColor = .white
         emptyStateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         emptyStateLabel.textAlignment = .center
         emptyStateLabel.numberOfLines = 0
         emptyStateLabel.isHidden = true
         emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        emptyStateLabel.textColor = style.primaryTextColor
+        activityIndicator.color = style.primaryTextColor
+        
+        // Обновляем стили навигации
+        navigationItem.rightBarButtonItem?.tintColor = style.accentColor
+        navigationController?.navigationBar.tintColor = style.accentColor
     }
     
     func updateEmptyStateVisibility() {

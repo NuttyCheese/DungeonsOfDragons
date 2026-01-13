@@ -27,21 +27,26 @@ final class CategoryCell: UICollectionViewCell {
     
     func configure(with title: String) {
         titleLabel.text = title
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        contentView.backgroundColor = style.secondaryBackgroundColor.withAlphaComponent(0.5)
+        titleLabel.textColor = style.primaryTextColor
+        arrowImageView.tintColor = style.iconColor
     }
 }
 
 private extension CategoryCell {
     func setupView() {
-        contentView.backgroundColor = UIColor.white.withAlphaComponent(0.1)
         contentView.layer.cornerRadius = 8
         contentView.layer.masksToBounds = true
         
         titleLabel.font = .systemFont(ofSize: 16, weight: .regular)
-        titleLabel.textColor = .white
         titleLabel.textAlignment = .left
         
         arrowImageView.image = UIImage(systemName: "chevron.right")
-        arrowImageView.tintColor = .white
         arrowImageView.contentMode = .scaleAspectFit
         
         contentView.subviewsOnView(titleLabel, arrowImageView)

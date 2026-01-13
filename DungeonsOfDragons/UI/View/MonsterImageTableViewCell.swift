@@ -28,6 +28,21 @@ final class MonsterImageTableViewCell: UITableViewCell {
             monsterImageView.image = image
         }
         favoriteButton.isSelected = isFavorite
+        applyStyles()
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        monsterImageView.backgroundColor = style.secondaryBackgroundColor
+        
+        favoriteButton.setImage(
+            UIImage(systemName: "star")?.withTintColor(style.iconColor, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        favoriteButton.setImage(
+            UIImage(systemName: "star.fill")?.withTintColor(style.accentColor, renderingMode: .alwaysOriginal),
+            for: .selected
+        )
     }
     
     @objc private func favoriteButtonTapped() {
@@ -39,7 +54,6 @@ final class MonsterImageTableViewCell: UITableViewCell {
     }
 
     private func setupView() {
-        monsterImageView.backgroundColor = .white
         monsterImageView.contentMode = .scaleAspectFit
         monsterImageView.clipsToBounds = true
         monsterImageView.layer.cornerRadius = 8
@@ -68,15 +82,6 @@ final class MonsterImageTableViewCell: UITableViewCell {
     
     private func setupFavoriteButton() {
         favoriteButton.tintColor = .clear
-        
-        favoriteButton.setImage(
-            UIImage(systemName: "star")?.withTintColor(.black, renderingMode: .alwaysOriginal),
-            for: .normal
-        )
-        favoriteButton.setImage(
-            UIImage(systemName: "star.fill")?.withTintColor(.red, renderingMode: .alwaysOriginal),
-            for: .selected
-        )
         favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
     }
 }

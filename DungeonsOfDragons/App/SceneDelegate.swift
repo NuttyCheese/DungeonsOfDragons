@@ -20,6 +20,15 @@ private extension SceneDelegate {
     func startToApp(windowScene: UIWindowScene) {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
+        
+        // Применяем сохраненную тему при запуске
+        let theme = DesignManager.shared.currentTheme
+        if theme == .system {
+            window?.overrideUserInterfaceStyle = .unspecified
+        } else {
+            window?.overrideUserInterfaceStyle = theme == .dark ? .dark : .light
+        }
+        
         window?.rootViewController = UINavigationController(rootViewController: MainViewController())
         window?.makeKeyAndVisible()
     }

@@ -35,6 +35,12 @@ final class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        applyStyles()
+    }
+    
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyStyles()
     }
     
     @objc private func pressToImage(_ sender: UITapGestureRecognizer) {
@@ -132,6 +138,16 @@ private extension MainViewController {
                 imageView.widthAnchor.constraint(equalToConstant: 100),
                 imageView.heightAnchor.constraint(equalToConstant: 100)
             ])
+        }
+    }
+    
+    func applyStyles() {
+        let style = DesignManager.shared.getCurrentStyle()
+        
+        // Применяем стили к текстам
+        let labels = [monsterLabel, diceLabel, spellsLabel, favoriteLabel, settingsLabel]
+        labels.forEach { label in
+            label.textColor = style.primaryTextColor
         }
     }
 
