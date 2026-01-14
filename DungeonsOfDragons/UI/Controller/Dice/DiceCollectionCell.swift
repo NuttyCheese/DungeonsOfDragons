@@ -77,7 +77,8 @@ final class DiceCollectionCell: UICollectionViewCell {
         // Настраиваем камеру
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 4)
+        let distance = Dices.getCameraDistance(for: diceType)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: distance)
         scene.rootNode.addChildNode(cameraNode)
         
         // Добавляем свет
@@ -105,6 +106,8 @@ final class DiceCollectionCell: UICollectionViewCell {
     private func updateButtonCornerRadius() {
         minusButton.layer.cornerRadius = minusButton.bounds.width / 2
         plusButton.layer.cornerRadius = plusButton.bounds.width / 2
+        minusButton.clipsToBounds = true
+        plusButton.clipsToBounds = true
     }
 }
 
