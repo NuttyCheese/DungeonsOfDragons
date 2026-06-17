@@ -35,3 +35,6 @@ iOS приложение для игры в Dungeons & Dragons, предоста
 - UserDefaults (для хранения избранного)
 - Diffable Data Source (для коллекций)
 
+[![Смотреть видео](https://img.shields.io/badge/▶-Смотреть_видео-red)](https://github.com/user-attachments/assets/e5ffb53d-4a8e-4008-8f4e-f83413744525)
+
+[![Смотреть видео](https://img.shields.io/badge/▶-Смотреть_видео-red)](https://github.com/user-attachments/assets/72ad1ac6-2bdf-417e-8cb0-8dff36f3ec5a)
