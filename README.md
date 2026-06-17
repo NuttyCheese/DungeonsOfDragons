@@ -34,3 +34,8 @@ iOS приложение для игры в Dungeons & Dragons, предоста
 - URLSession (для сетевых запросов)
 - UserDefaults (для хранения избранного)
 - Diffable Data Source (для коллекций)
+
+### 📹 Демонстрация работы
+
+[![Превью монстра](путь_к_картинке_1.jpg)](https://github.com/user-attachments/files/29050838/monster.mov.zip)
+[![Превью кубика](путь_к_картинке_2.jpg)](https://github.com/user-attachments/files/29050894/dice.mov.zip)
